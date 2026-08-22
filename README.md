@@ -130,6 +130,85 @@ Yang perlu kamu isi: fungsi `getListItems()` (parsing halaman list) dan
 
 ---
 
+## 🔍 Logika yang Perlu Kamu Implementasikan Sendiri
+
+Repo ini sengaja **tidak menyertakan logika parsing untuk situs tertentu**.
+Bagian itulah yang kamu tulis sendiri. Berikut ringkasannya.
+
+### 1. Apa saja yang harus diisi
+
+| Fungsi | Tugas | Output wajib |
+|---|---|---|
+| `getListItems(page)` | Parsing daftar video dari halaman list/index | Array `{ title, url, thumbnail }` |
+| `getDetail(url)` | Parsing satu halaman detail video | `{ player_url, duration, views, tags, download_url }` |
+
+Field `title`, `url`, `thumbnail`, dan `player_url` adalah minimum agar
+dashboard berfungsi penuh — field lain opsional (UI-nya otomatis
+menyembunyikan bagian yang kosong).
+
+### 2. Contoh pola implementasi
+
+> ⚠️ Contoh di bawah memakai **HTML fiktif** hanya sebagai ilustrasi
+> pola — struktur asli setiap situs pasti berbeda.
+
+```js
+async getListItems(page = 1) {
+    const html = await this.fetchHtml(`${CONFIG.targetUrl}/page/${page}`);
+
+    // contoh: kartu video berulang dengan pola <div class="video-card">
+    const chunks = html.split('<div class="video-card">').slice(1);
+    const items = [];
+
+    for (const chunk of chunks) {
+        const title     = chunk.match(/<h2 class="title">([^<]+)<\/h2>/)?.[1];
+        const url       = chunk.match(/<a[^>]+href="([^"]+)"/)?.[1];
+        const thumbnail = chunk.match(/<img[^>]+src="([^"]+)"/)?.[1];
+
+        if (title && url && thumbnail) {
+            items.push({ title, url, thumbnail });
+        }
+    }
+    return items;
+}
+
+async getDetail(url) {
+    const html = await this.fetchHtml(url);
+
+    return {
+        player_url:   html.match(/<iframe[^>]+src="([^"]+)"[^>]*player/)?.[1] ?? null,
+        duration:     html.match(/class="duration">([^<]+)</)?.[1] ?? null,
+        views:        html.match(/class="views">([\d.,]+)/)?.[1] ?? '0',
+        tags:         [...html.matchAll(/class="tag">([^<]+)</g)].map(m => m[1]),
+        download_url: html.match(/class="download"[^>]+href="([^"]+)"/)?.[1] ?? null
+    };
+}
+```
+
+### 3. Cara menemukan struktur situs target
+
+1. **Buka situs target di browser**, klik kanan → *View Page Source*
+   atau buka DevTools (`F12`) → tab *Elements*.
+2. Cari blok HTML yang **berulang** di halaman list — biasanya itu
+   kartu/list item. Catat class/nama elemen pembungkusnya.
+3. Untuk `player_url`: buka halaman detail, lalu di DevTools → tab
+   *Network* → filter media/iframe sambil memutar video. Sumber pemutar
+   biasanya terlihat sebagai request eksternal atau atribut `src`
+   sebuah `<iframe>` / `<video>`.
+4. Klik kanan elemen → *Copy → Copy selector* sebagai titik awal
+   penulisan pattern.
+5. Tulis regex/parser-mu, uji dulu dengan `console.log()` sebelum
+   menyimpan ke database.
+
+### 4. Tips
+
+- Mulai dari **satu item** sampai berhasil, baru loop ke banyak
+- Setelah scrape, cek `igo_data.json` untuk memastikan format sesuai
+- Selalu kasih delay antar request (template sudah menyediakan)
+- Struktur HTML bisa berubah sewaktu-waktu — parser kadang perlu
+  disesuaikan ulang
+
+---
+
 ## Roadmap
 
 - [ ] Multi-site support (profil scraper per situs)
