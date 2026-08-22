@@ -1,0 +1,16 @@
+node_modules/
+*.log
+debug.html
+detail.html
+
+# binary besar, tidak untuk repo
+kiro-cli.exe
+
+# hasil scraping
+igo_data.json
+
+# dokumen analisa & teknik scraping (privat)
+docs/
+
+# logika scraping asli (privat) - gunakan scraper.example.js sebagai template
+scraper.js

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gio-desu Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🎬 Gio-desu</h1>
+        <div class="controls">
+            <input type="text" id="search" placeholder="Cari judul..." autocomplete="off">
+            <select id="sort">
+                <option value="newest">Terbaru</option>
+                <option value="oldest">Terlama</option>
+                <option value="duration">Durasi Terpanjang</option>
+                <option value="views">Terpopuler</option>
+                <option value="title">Judul A-Z</option>
+            </select>
+        </div>
+        <div id="tag-chips" class="chips"></div>
+        <div id="stats" class="stats"></div>
+    </header>
+
+    <main>
+        <div id="skeleton-grid" class="grid">
+            <div class="skeleton-card"><div class="skel-thumb"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+            <div class="skeleton-card"><div class="skel-thumb"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+            <div class="skeleton-card"><div class="skel-thumb"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+            <div class="skeleton-card"><div class="skel-thumb"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+        </div>
+
+        <div id="grid" class="grid hidden"></div>
+
+        <div class="load-wrap">
+            <button id="load-more" class="load-more hidden">Muat lebih banyak</button>
+        </div>
+
+        <p id="empty-state" class="empty hidden">
+            Belum ada data. Jalankan <code>npm run scrape</code> terlebih dahulu.
+        </p>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
